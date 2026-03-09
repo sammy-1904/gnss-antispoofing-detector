@@ -67,7 +67,7 @@ def train_model():
         model = XGBClassifier(
             n_estimators=300,
             max_depth=5,
-            learning_rate=0.05,
+            learning_rate=0.02,
             subsample=0.8,
             colsample_bytree=0.8,
             gamma=1,

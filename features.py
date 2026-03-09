@@ -109,10 +109,10 @@ def add_temporal_features(df: pd.DataFrame) -> pd.DataFrame:
             groups[col].transform(lambda x: x.diff(3).fillna(0)).rename(f'{col}_diff3')
         )
         lag1_parts.append(
-            groups[col].transform(lambda x: x.shift(1).fillna(method='bfill')).rename(f'{col}_lag1')
+            groups[col].transform(lambda x: x.shift(1).bfill()).rename(f'{col}_lag1')
         )
         lag3_parts.append(
-            groups[col].transform(lambda x: x.shift(3).fillna(method='bfill')).rename(f'{col}_lag3')
+            groups[col].transform(lambda x: x.shift(3).bfill()).rename(f'{col}_lag3')
         )
 
     all_parts = roll_mean_parts + roll_std_parts + diff1_parts + diff3_parts + lag1_parts + lag3_parts
@@ -153,9 +153,10 @@ def add_pir_features(df: pd.DataFrame) -> pd.DataFrame:
         groups['TCD'].transform(lambda x: x - x.rolling(10, min_periods=1).mean())
     )
 
-    # Geometric consistency: pseudorange_rate + doppler_rate*λ should be ~0
+    # Geometric consistency: pseudorange_rate + Carrier_Doppler_hz*λ should be ~0
+    # (range rate = -Doppler_freq × wavelength, so residual = pseudorange_rate + f_d × λ ≈ 0)
     df['doppler_pseudo_residual'] = (
-        df['pseudorange_rate'] + df['doppler_rate'] * GPS_L1_WAVELENGTH
+        df['pseudorange_rate'] + df['Carrier_Doppler_hz'] * GPS_L1_WAVELENGTH
     )
 
     return df

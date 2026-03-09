@@ -1,9 +1,12 @@
 import pandas as pd
 import numpy as np
 import sys
+import os
 from pathlib import Path
 from xgboost import XGBClassifier
-from feature_engineering import prepare_data
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src.feature_engineering import prepare_data
 
 def generate_submission():
     base_dir = Path(__file__).parent.parent
